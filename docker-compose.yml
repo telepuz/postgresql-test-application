@@ -1,0 +1,9 @@
+version: "3"
+services:
+  haproxy:
+    image: "haproxy:alpine3.21"
+    ports:
+      - 5432:5432
+      - 7000:7000
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
