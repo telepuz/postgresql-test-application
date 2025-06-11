@@ -4,6 +4,7 @@ services:
     image: "haproxy:alpine3.21"
     ports:
       - 5432:5432
+      - 5433:5433
       - 7000:7000
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
