@@ -6,7 +6,7 @@ Application for testing PostgreSQL Patroni Cluster
 
 1. Create test table
     ```sql
-    CREATE TABLE public.test_table (
+    CREATE TABLE db.test_table (
         t text
     );
     ```
