@@ -9,18 +9,19 @@ import (
 )
 
 type AppContext struct {
-	Postgresql *postgresql.Postgresql
+	PostgresqlRW *postgresql.Postgresql
+	PostgresqlRO *postgresql.Postgresql
 }
 
 func Run(c *AppContext) {
 	for {
-		res, err := c.Postgresql.Write()
+		res, err := c.PostgresqlRW.Write()
 		if err != nil {
 			slog.Error(err.Error())
 		}
 		slog.Info(fmt.Sprintf("Write: %s", res))
 
-		res, err = c.Postgresql.Read()
+		res, err = c.PostgresqlRO.Read()
 		if err != nil {
 			slog.Error(err.Error())
 		}

@@ -14,7 +14,8 @@ Application for testing PostgreSQL Patroni Cluster
 1. Make `.env` file
     ```
     DB_HOST=localhost
-    DB_PORT=5432
+    DB_PORT_RW=5432
+    DB_PORT_RO=5433
     DB_USER=dbuser
     DB_PASS=Qwerty123
     DB_NAME=db

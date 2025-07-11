@@ -23,14 +23,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	conn, err := pgxpool.Connect(
+	rw_conn, err := pgxpool.Connect(
 		context.Background(),
 		fmt.Sprintf(
 			"postgres://%s:%s@%s:%s/%s",
 			envFile["DB_USER"],
 			envFile["DB_PASS"],
 			envFile["DB_HOST"],
-			envFile["DB_PORT"],
+			envFile["DB_PORT_RW"],
 			envFile["DB_NAME"],
 		))
 	if err != nil {
@@ -38,11 +38,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	pg := postgresql.NewPostgresql(
+	ro_conn, err := pgxpool.Connect(
+		context.Background(),
+		fmt.Sprintf(
+			"postgres://%s:%s@%s:%s/%s",
+			envFile["DB_USER"],
+			envFile["DB_PASS"],
+			envFile["DB_HOST"],
+			envFile["DB_PORT_RO"],
+			envFile["DB_NAME"],
+		))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+
+	pg_rw := postgresql.NewPostgresql(
 		"test-cluster",
-		conn)
+		rw_conn)
+	pg_ro := postgresql.NewPostgresql(
+		"test-cluster",
+		ro_conn)
 	c := app.AppContext{
-		Postgresql: pg,
+		PostgresqlRW: pg_rw,
+		PostgresqlRO: pg_ro,
 	}
 
 	app.Run(&c)
