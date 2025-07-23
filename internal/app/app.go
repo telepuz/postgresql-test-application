@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"log/slog"
+	"sync"
 	"time"
 
 	"github.com/telepuz/postgresql-test-application/internal/postgresql"
@@ -14,19 +15,33 @@ type AppContext struct {
 }
 
 func Run(c *AppContext) {
-	for {
-		res, err := c.PostgresqlRW.Write()
-		if err != nil {
-			slog.Error(err.Error())
-		}
-		slog.Info(fmt.Sprintf("Write: %s", res))
+	wg := sync.WaitGroup{}
+	wg.Add(2)
 
-		res, err = c.PostgresqlRO.Read()
-		if err != nil {
-			slog.Error(err.Error())
+	go func() {
+		for {
+			res, err := c.PostgresqlRW.Write()
+			if err != nil {
+				slog.Error(err.Error())
+			}
+			slog.Info(fmt.Sprintf("Write: %s", res))
+			time.Sleep(500 * time.Millisecond)
 		}
-		slog.Info(fmt.Sprintf("Read: %s", res))
+		wg.Done()
+	}()
 
-		time.Sleep(500 * time.Millisecond)
-	}
+	go func() {
+		for {
+			res, err := c.PostgresqlRO.Read()
+			if err != nil {
+				slog.Error(err.Error())
+			}
+			slog.Info(fmt.Sprintf("Read: %s", res))
+			time.Sleep(500 * time.Millisecond)
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+	slog.Info("Complete all go routines. Exit...")
 }
